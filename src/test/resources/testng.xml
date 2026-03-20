@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="DogAPISuite" verbose="1" parallel="false">
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+    <test name="DogAPITests">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.dogapi.tests.BreedsTest"/>
+            <class name="com.dogapi.tests.ImagesTest"/>
+        </classes>
+    </test>
+</suite>
