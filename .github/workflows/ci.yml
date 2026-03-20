@@ -24,35 +24,49 @@ jobs:
           cache: "maven"
 
       - name: Run tests
-        run: mvn -B -q -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml test
-        working-directory: ./dog-api-tests
+        run: |
+          if [ -d "./dog-api-tests" ]; then cd ./dog-api-tests; fi
+          mvn -B -q -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml test
 
       - name: Generate Allure HTML
-        run: mvn -B -q allure:report
-        working-directory: ./dog-api-tests
+        run: |
+          if [ -d "./dog-api-tests" ]; then cd ./dog-api-tests; fi
+          mvn -B -q allure:report
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site
+          if [ -d "./dog-api-tests/target/site/allure-maven-plugin" ]; then cp -r ./dog-api-tests/target/site/allure-maven-plugin/* _site/; fi
+          if [ -d "./target/site/allure-maven-plugin" ]; then cp -r ./target/site/allure-maven-plugin/* _site/; fi
 
       - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dog-api-tests/target/site/allure-maven-plugin
+          path: _site
 
       - name: Upload surefire reports
         uses: actions/upload-artifact@v4
         with:
           name: surefire-reports
-          path: dog-api-tests/target/surefire-reports
+          path: |
+            dog-api-tests/target/surefire-reports
+            target/surefire-reports
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path: dog-api-tests/target/allure-results
+          path: |
+            dog-api-tests/target/allure-results
+            target/allure-results
 
       - name: Upload Allure HTML
         uses: actions/upload-artifact@v4
         with:
           name: allure-report-html
-          path: dog-api-tests/target/site/allure-maven-plugin
+          path: |
+            dog-api-tests/target/site/allure-maven-plugin
+            target/site/allure-maven-plugin
 
   deploy:
     needs: test
