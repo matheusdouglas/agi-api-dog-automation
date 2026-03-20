@@ -40,9 +40,11 @@ jobs:
 
       - name: Run tests
         if: ${{ steps.connectivity.outputs.ok == 'true' }}
+        env:
+          JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false"
         run: |
           if [ -d "./dog-api-tests" ]; then cd ./dog-api-tests; fi
-          mvn -B -q -Djava.net.preferIPv4Stack=true -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml test
+          mvn -B -q -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml test
 
       - name: Generate Allure HTML
         if: ${{ steps.connectivity.outputs.ok == 'true' }}

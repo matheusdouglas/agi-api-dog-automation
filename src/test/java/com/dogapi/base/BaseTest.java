@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.SkipException;
 
+import java.net.URI;
 import java.time.Instant;
 
 public class BaseTest {
@@ -17,8 +18,26 @@ public class BaseTest {
     public void setUp() {
         System.setProperty("allure.results.directory", "target/allure-results");
         System.setProperty("java.net.preferIPv4Stack", "true");
+        System.setProperty("java.net.preferIPv6Addresses", "false");
         RestAssured.baseURI = "https://dog.ceo/api";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+        String[] proxyEnvKeys = new String[]{"HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"};
+        for (String k : proxyEnvKeys) {
+            String v = System.getenv(k);
+            if (v != null && !v.trim().isEmpty()) {
+                try {
+                    URI u = v.startsWith("http") ? URI.create(v) : URI.create("http://" + v);
+                    if (u.getHost() != null && u.getPort() > 0) {
+                        RestAssured.proxy(u.getHost(), u.getPort());
+                        System.setProperty("https.proxyHost", u.getHost());
+                        System.setProperty("https.proxyPort", String.valueOf(u.getPort()));
+                        System.setProperty("http.proxyHost", u.getHost());
+                        System.setProperty("http.proxyPort", String.valueOf(u.getPort()));
+                    }
+                } catch (Exception ignored) { }
+                break;
+            }
+        }
         String inCI = System.getenv("GITHUB_ACTIONS");
         String allowHttp = System.getenv("ALLOW_EXTERNAL_HTTP");
         if ("true".equalsIgnoreCase(inCI) && !"true".equalsIgnoreCase(allowHttp)) {

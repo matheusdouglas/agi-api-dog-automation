@@ -69,4 +69,4 @@ mvn allure:serve
 - Ambientes de CI podem bloquear acesso externo ocasionalmente. Por padrão, se a variável `GITHUB_ACTIONS` estiver presente e `ALLOW_EXTERNAL_HTTP` não for `true`, os testes de integração são marcados como `SKIPPED`.
 - Para forçar a execução completa na CI, adicione no workflow:
   - `env: ALLOW_EXTERNAL_HTTP: true`
-  - Ou configure como variável do job/step antes do `mvn test`.
+- Se sua organização usa proxy na Actions, defina `HTTPS_PROXY` ou `HTTP_PROXY` como secret/variable do repositório; o BaseTest detecta e configura o proxy automaticamente para o Rest Assured.
