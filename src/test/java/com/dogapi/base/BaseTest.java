@@ -19,6 +19,11 @@ public class BaseTest {
         System.setProperty("java.net.preferIPv4Stack", "true");
         RestAssured.baseURI = "https://dog.ceo/api";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+        String inCI = System.getenv("GITHUB_ACTIONS");
+        String allowHttp = System.getenv("ALLOW_EXTERNAL_HTTP");
+        if ("true".equalsIgnoreCase(inCI) && !"true".equalsIgnoreCase(allowHttp)) {
+            throw new SkipException("Execução na CI sem ALLOW_EXTERNAL_HTTP=true: pulando testes de integração externos");
+        }
         boolean ok = false;
         int attempts = 0;
         while (attempts < 3 && !ok) {

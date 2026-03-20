@@ -63,4 +63,10 @@ mvn allure:serve
 - Como habilitar no repositório:
   - Settings → Pages → Build and deployment = GitHub Actions.
 - Onde ver a URL:
-  - Na execução do workflow, na etapa “Deploy to GitHub Pages”, copie o `page_url`.
+
+### Dica para Execução na CI
+
+- Ambientes de CI podem bloquear acesso externo ocasionalmente. Por padrão, se a variável `GITHUB_ACTIONS` estiver presente e `ALLOW_EXTERNAL_HTTP` não for `true`, os testes de integração são marcados como `SKIPPED`.
+- Para forçar a execução completa na CI, adicione no workflow:
+  - `env: ALLOW_EXTERNAL_HTTP: true`
+  - Ou configure como variável do job/step antes do `mvn test`.
