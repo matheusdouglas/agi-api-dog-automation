@@ -7,6 +7,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.SkipException;
 
 import java.time.Instant;
 
@@ -15,8 +16,19 @@ public class BaseTest {
     @BeforeClass
     public void setUp() {
         System.setProperty("allure.results.directory", "target/allure-results");
+        System.setProperty("java.net.preferIPv4Stack", "true");
         RestAssured.baseURI = "https://dog.ceo/api";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+        try {
+            io.restassured.RestAssured.
+                    given().
+                    when().
+                    get("/breeds/list/all").
+                    then().
+                    statusCode(200);
+        } catch (Exception ex) {
+            throw new SkipException("API indisponível na execução atual: " + ex.getMessage());
+        }
     }
 
     @AfterMethod(alwaysRun = true)
