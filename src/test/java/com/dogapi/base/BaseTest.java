@@ -19,16 +19,23 @@ public class BaseTest {
         System.setProperty("java.net.preferIPv4Stack", "true");
         RestAssured.baseURI = "https://dog.ceo/api";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
-        try {
-            io.restassured.RestAssured.
-                    given().
-                    when().
-                    get("/breeds/list/all").
-                    then().
-                    statusCode(200);
-        } catch (Exception ex) {
-            throw new SkipException("API indisponível na execução atual: " + ex.getMessage());
+        boolean ok = false;
+        int attempts = 0;
+        while (attempts < 3 && !ok) {
+            try {
+                RestAssured.
+                        given().
+                        when().
+                        get("/breeds/list/all").
+                        then().
+                        statusCode(200);
+                ok = true;
+            } catch (Exception e) {
+                attempts++;
+                try { Thread.sleep(700); } catch (InterruptedException ignored) { Thread.currentThread().interrupt(); }
+            }
         }
+        if (!ok) throw new SkipException("API indisponível na execução atual");
     }
 
     @AfterMethod(alwaysRun = true)
