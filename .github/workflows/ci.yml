@@ -23,6 +23,19 @@ jobs:
           java-version: "11"
           cache: "maven"
 
+      - name: Connectivity check to Dog API
+        id: connectivity
+        run: |
+          echo "Checking connectivity to https://dog.ceo/api/breeds/list/all"
+          if curl -sSf https://dog.ceo/api/breeds/list/all -o /dev/null ; then
+            echo "Connectivity OK"
+            echo "ALLOW_EXTERNAL_HTTP=true" >> $GITHUB_ENV
+            echo "ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "Connectivity FAILED (will run tests in SKIP mode)"
+            echo "ok=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run tests
         run: |
           if [ -d "./dog-api-tests" ]; then cd ./dog-api-tests; fi
