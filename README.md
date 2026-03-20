@@ -41,12 +41,6 @@ mvn allure:serve
 - Relatório Allure com detalhes de falhas
 - Sem dependências externas além pom.xml
 
-## Notas
-
-- O TestNG usa o arquivo de suíte em src/test/resources/testng.xml. No PowerShell, se houver erro de parsing do -D, use:
-  - `mvn --% -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml test`
-- O Allure grava resultados em `target/allure-results` (definido em `src/test/resources/allure.properties`). O relatório HTML local é aberto com `mvn allure:serve` ou gerado em `target/site/allure-maven-plugin` via `mvn allure:report`.
-
 ## CI (GitHub Actions)
 
 - Pipeline: Ubuntu + Java 11 + mvn test com suite TestNG.
@@ -54,19 +48,3 @@ mvn allure:serve
   - `surefire-reports` (logs TestNG)
   - `allure-results` (bruto)
   - `allure-report-html` (HTML estático do Allure)
-
-### Publicação via GitHub Pages
-
-- Já configurado no workflow:
-  - Publica o diretório `target/site/allure-maven-plugin` como site.
-  - Deploy automático usando GitHub Pages (Actions → executar workflow).
-- Como habilitar no repositório:
-  - Settings → Pages → Build and deployment = GitHub Actions.
-- Onde ver a URL:
-
-### Dica para Execução na CI
-
-- Ambientes de CI podem bloquear acesso externo ocasionalmente. Por padrão, se a variável `GITHUB_ACTIONS` estiver presente e `ALLOW_EXTERNAL_HTTP` não for `true`, os testes de integração são marcados como `SKIPPED`.
-- Para forçar a execução completa na CI, adicione no workflow:
-  - `env: ALLOW_EXTERNAL_HTTP: true`
-- Se sua organização usa proxy na Actions, defina `HTTPS_PROXY` ou `HTTP_PROXY` como secret/variable do repositório; o BaseTest detecta e configura o proxy automaticamente para o Rest Assured.
